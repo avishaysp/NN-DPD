@@ -22,6 +22,7 @@ set_sg_power(ESG, pRF)   % output power
 ESG_load_IQ(ESG, iqdata, fs*1e-6);
 % set_sg_marker_Nimrod(ESG,1,'MATLAB_WFM.bin',1,round(length(iqdata)*0.75/100)*100,1)
 set_sg_marker(ESG,1,'MATLAB_WFM.bin',1,round(length(iqdata)*0.75/100)*100,1)
+
 %% open communication with the VSA
 fclose(VSA);
 VSA = open_vsa_visa();
@@ -85,13 +86,11 @@ v_error = (Input_signal).*linear_gain_1 - (Output_signal);
 v_error_rms = 10*log10(rms(v_error).^2 / impedance * 1000);
 
 %% PA Model - calc (G)MP coeffs
-f=128000000; %to check
+f = linspace(-64000000, 64000000, length(Input_signal)); %to check
 
-model.PA_k = 5;    % PA fitting model - nonlinear 
-model.PA_m = 5;     % PA fitting model - memory 
-model.polynomialType = 'full';
-X_Matrix_PA = Build_Signal_Matrix(Input_signal,model,'PA');
-% X_Matrix_DPDed_TO_PA = Build_Signal_Matrix(Input_signal_DPD,model,'PA'); %here we took the dpded signal(from below) and passed it throgh the pa coeffiscient
+K_PA = 3;    % PA fitting model - nonlinear 
+M_PA = 3;     % PA fitting model - memory 
+X_Matrix_PA = Build_Signal_Matrix(Input_signal, K_PA, M_PA);
 PA_coef = Estimate_DPD_coeffs(X_Matrix_PA,Output_signal./linear_gain_1);
 
 % Output_no_DPD_estimated
@@ -116,7 +115,7 @@ if 1 % Plot AM/AM - AM/PM core
     plot(10.*log10(linear_gain_1 .* abs(Input_signal).^2/50*1000), ...
             (angle(Output_no_DPD_estimated./Input_signal))./pi*180,'kx','MarkerSize',5);        
     xlabel('Pout [dBm]'); ylabel('AM/PM [Degrees]'); 
-    title(['AM2PM Results']); axis([-10 20 -50 50]);    
+    title('AM2PM Results'); axis([-10 20 -50 50]);    
 end
 % model ranking
 rank = normalizedSquaredDifferenceLoss(Output_no_DPD_estimated,Output_signal ./ linear_gain_1);
@@ -124,48 +123,34 @@ disp(['Ranking of the PA model: ', num2str(rank)]);
 %% figures for the PA model frequency domain
 
 figure;
-plot(smooth(db(fftshift(fft(Input_signal))),100)); 
+plot(smooth(db(fftshift(fft(Input_signal))),500)); 
 hold on;
 
-plot(smooth(db(fftshift(fft(Output_signal))),100));
-plot(smooth(db(fftshift(fft(Output_no_DPD_estimated))),100));
+plot(smooth(db(fftshift(fft(Output_signal))),500));
+plot(smooth(db(fftshift(fft(Output_no_DPD_estimated))),500));
 grid;
 legend('Input Signal', 'Output Signal', 'Output without DPD Estimated');
 
-% NMSE_model = db(rms(Output_signal/rms(Output_signal)-Output_no_DPD_estimated/rms(Output_no_DPD_estimated)))
+NMSE_model = db(rms(Output_signal/rms(Output_signal)-Output_no_DPD_estimated/rms(Output_no_DPD_estimated)))
 
 %% Calculate DPD coefficients
 close all;
-model.K = 7;
-model.M = 7;
-Y_Matrix = Build_Signal_Matrix(Output_signal./linear_gain_1,model,'DPD');
+K_DPD = 7;
+M_DPD = 7;
+Y_Matrix = Build_Signal_Matrix(Output_signal./linear_gain_1, K_DPD, M_DPD);
 DPD_coef_Inverse_Vector = Estimate_DPD_coeffs(Y_Matrix,Input_signal);
 
 level = 0; % dB
-X_Matrix = Build_Signal_Matrix(Input_signal .* (10.^(level./20)),model,'DPD'); %with DPD size k,q
+X_Matrix = Build_Signal_Matrix(Input_signal .* (10.^(level./20)), K_DPD, M_DPD); 
 Input_signal_DPD = X_Matrix*DPD_coef_Inverse_Vector;
 
 
 
 % Model ranking
-% rank = normalizedSquaredDifferenceLoss(Input_signal_DPD, Input_signal);
+rank = normalizedSquaredDifferenceLoss(Input_signal_DPD, Input_signal);
 
 % Display the rank
 disp(['Model Rank: ', num2str(rank)]);
-
-
-%clip it
-clip_factor = 20;
-% Separate the real and imaginary parts
-real_part = real(Input_signal_DPD);
-imag_part = imag(Input_signal_DPD);
-
-% Apply the maximum limit of 2.5 to both parts
-real_part_clipped =max(min(real_part, clip_factor), -clip_factor);
-imag_part_clipped = max(min(imag_part, clip_factor), -clip_factor);
-
-% Reconstruct the complex signal with the clipped values
-clipped_input_dpd = real_part_clipped + 1i * imag_part_clipped;
 
 
 
@@ -173,9 +158,78 @@ clipped_input_dpd = real_part_clipped + 1i * imag_part_clipped;
 % legend('Input Signal', 'Output Signal / Linear Gain 1', 'Input after DPD');
 
 PAPR = db(max(abs(Input_signal_DPD))/rms(Input_signal_DPD))
+
+
+%% figures for the DPD model frequency domain and AM/AM AM/PM
+
+Y_after_DPD = Y_Matrix * DPD_coef_Inverse_Vector;
+figure;
+subplot(3,1,1);
+plot(smooth(db(fftshift(fft(Output_signal))),500)); 
+hold on;
+
+plot(smooth(db(fftshift(fft(Input_signal))),500));
+plot(smooth(db(fftshift(fft(Y_after_DPD))),500));
+grid;
+legend('Output Signal', 'Input Signal', 'Y after DPD');
+ 
+subplot(3,1,2); hold on; grid on;
+% 1. AM/AM RAW data 
+plot(10.*log10(abs(Output_signal).^2/50*1000), 20*log10( abs(Input_signal) ./ abs(Output_signal) ),'or','MarkerSize',2);
+% 2. AM/AM Fitted data
+plot(10.*log10(abs(Output_signal).^2/50*1000), 20*log10(abs(Y_after_DPD ) ./ abs(Output_signal)),'kx','MarkerSize',5);   
+axis([ -10 20 -10 5]);
+title('AM2AM Results'); xlabel('Pout [dBm]'); ylabel('AM/AM [dB]');
+
+subplot(3,1,3);  hold on; grid on;
+
+% 1. AM/PM RAW data 
+plot(10.*log10(abs(Output_signal).^2/50*1000), (angle(Input_signal ./ Output_signal))./pi*180,'or','MarkerSize',2);        
+% 2. AM/PM Fitted data
+plot(10.*log10(abs(Output_signal).^2/50*1000), (angle(Y_after_DPD ./ Output_signal))./pi*180,'kx','MarkerSize',5);
+xlabel('Pout [dBm]'); ylabel('AM/PM [Degrees]'); 
+title(['AM2PM Results']); axis([-10 20 -50 50]);    
+
+%% pass X through DPD, then PA. second try :)
+
+X_Matrix_before_dpd = Build_Signal_Matrix(Input_signal, K_DPD, M_DPD);
+input_signal_after_dpd = X_Matrix_before_dpd * DPD_coef_Inverse_Vector;
+
+input_dpded_Matrix = Build_Signal_Matrix(input_signal_after_dpd ,K_PA, M_PA);
+input_dpded_then_paed = input_dpded_Matrix * PA_coef;
+
+%% figures for the Full Flow - frequency domain and AM/AM AM/PM
+
+figure;
+plot(smooth(db(fftshift(fft(Input_signal))),500)); hold on;
+plot(smooth(db(fftshift(fft(Output_signal))),500));
+plot(smooth(db(fftshift(fft(input_dpded_then_paed))),500));
+grid;
+legend('Input Signal', 'Output Signal', 'input DPDed then PAed');
+%%
+subplot(3,1,2); hold on; grid on;
+% 1. AM/AM RAW data 
+plot(10.*log10(abs(Output_signal).^2/50*1000), 20*log10( abs(Input_signal) ./ abs(Output_signal) ),'or','MarkerSize',2);
+% 2. AM/AM Fitted data
+plot(10.*log10(abs(Output_signal).^2/50*1000), 20*log10(abs(Y_after_DPD ) ./ abs(Output_signal)),'kx','MarkerSize',5);   
+axis([ -10 20 -10 5]);
+title('AM2AM Results'); xlabel('Pout [dBm]'); ylabel('AM/AM [dB]');
+
+subplot(3,1,3);  hold on; grid on;
+
+% 1. AM/PM RAW data 
+plot(10.*log10(abs(Output_signal).^2/50*1000), (angle(Input_signal ./ Output_signal))./pi*180,'or','MarkerSize',2);        
+% 2. AM/PM Fitted data
+plot(10.*log10(abs(Output_signal).^2/50*1000), (angle(Y_after_DPD ./ Output_signal))./pi*180,'kx','MarkerSize',5);
+xlabel('Pout [dBm]'); ylabel('AM/PM [Degrees]'); 
+title(['AM2PM Results']); axis([-10 20 -50 50]);    
+
+
+
+
 %% take a signal x and pass it through dpd filter and then a pa model
 
-X_Matrix_DPDed_TO_PA = Build_Signal_Matrix(Input_signal_DPD,model,'PA'); %here we took the dpded signal in order to pass it throgh the pa coeffiscient
+X_Matrix_DPDed_TO_PA = Build_Signal_Matrix(Input_signal_DPD,model,'PA'); % here we took the dpded signal in order to pass it throgh the pa coeffiscient
 Output_with_DPD_estimated = X_Matrix_DPDed_TO_PA *PA_coef;
 
 
@@ -211,10 +265,10 @@ rank = normalizedSquaredDifferenceLoss(Output_with_DPD_estimated,Output_signal .
 disp(['Ranking of the PA model: ', num2str(rank)]);
 %% figures for the PA model frequency domain
 figure;
-plot(f,smooth(db(fftshift(fft(Input_signal))),100));
+plot(smooth(db(fftshift(fft(Input_signal))),100));
 hold on;
-plot(f,smooth(db(fftshift(fft(Output_signal))),100));
-plot(f,smooth(db(fftshift(fft(Output_with_DPD_estimated))),100));
+plot(smooth(db(fftshift(fft(Output_signal))),100));
+plot(smooth(db(fftshift(fft(Output_with_DPD_estimated))),100));
 grid;
 
 NMSE_model = db(rms(Output_signal/rms(Output_signal)-Output_with_DPD_estimated/rms(Output_with_DPD_estimated)))
