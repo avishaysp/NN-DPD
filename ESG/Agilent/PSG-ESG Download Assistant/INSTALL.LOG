@@ -1,0 +1,59 @@
+***  Installation Started 07/31/2001 7:16  ***
+Title: Agilent PSG/ESG Download Assistant Installation
+Source: \\paragon\data sheets\Agilent\RF Signal Generators\Software\Downloader\DownloadAssistant1-1.EXE
+Made Dir: C:\Program Files\Agilent
+Made Dir: C:\Program Files\Agilent\Signal Generators
+Made Dir: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\UNWISE.EXE
+RegDB Key: Software\Microsoft\Windows\CurrentVersion\Uninstall\Agilent PSG/ESG Download Assistant
+RegDB Val: Agilent PSG/ESG Download Assistant
+RegDB Name: DisplayName
+RegDB Root: 2
+RegDB Key: Software\Microsoft\Windows\CurrentVersion\Uninstall\Agilent PSG/ESG Download Assistant
+RegDB Val: C:\PROGRA~1\Agilent\SIGNAL~1\PSG-ES~1\UNWISE.EXE C:\PROGRA~1\Agilent\SIGNAL~1\PSG-ES~1\INSTALL.LOG
+RegDB Name: UninstallString
+RegDB Root: 2
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\PSG-ESG Download Assistant.chm
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_newconnection.m
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_newconnection.p
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_query.m
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_query.p
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sample.m
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sendcommand.m
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sendcommand.p
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sequencesample.m
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sgIOmx.dll
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_waveformload.m
+File Copy: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_waveformload.p
+Made Dir: C:\Documents and Settings\Administrator\Start Menu\Programs\Agilent Signal Generators
+Shell Link: C:\Documents and Settings\Administrator\Start Menu\Programs\Agilent Signal Generators\PSG-ESG Download Assistant.lnk
+Shell Link: C:\Documents and Settings\Administrator\Desktop\PSG-ESG Download Assistant.lnk
+User Rights: Admin
+***  Installation Started 05/02/2004 11:51  ***
+Title: Agilent PSG/ESG Download Assistant Installation
+Source: \\paragon\Data Sheets\Agilent\Firmware Upgrades\ESG-D\DownloadAssistant.EXE
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\UNWISE.EXE
+RegDB Key: Software\Microsoft\Windows\CurrentVersion\Uninstall\Agilent PSG/ESG Download Assistant
+RegDB Val: Agilent PSG/ESG Download Assistant
+RegDB Name: DisplayName
+RegDB Root: 2
+RegDB Old: Agilent PSG/ESG Download Assistant
+RegDB Key: Software\Microsoft\Windows\CurrentVersion\Uninstall\Agilent PSG/ESG Download Assistant
+RegDB Val: C:\PROGRA~1\Agilent\SIGNAL~1\PSG-ES~1\UNWISE.EXE C:\PROGRA~1\Agilent\SIGNAL~1\PSG-ES~1\INSTALL.LOG
+RegDB Name: UninstallString
+RegDB Root: 2
+RegDB Old: C:\PROGRA~1\Agilent\SIGNAL~1\PSG-ES~1\UNWISE.EXE C:\PROGRA~1\Agilent\SIGNAL~1\PSG-ES~1\INSTALL.LOG
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\PSG-ESG Download Assistant.chm
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_newconnection.m
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_newconnection.p
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_query.m
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_query.p
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sample.m
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sendcommand.m
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sendcommand.p
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sequencesample.m
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_sgIOmx.dll
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_waveformload.m
+File Overwrite: C:\Program Files\Agilent\Signal Generators\PSG-ESG Download Assistant\agt_waveformload.p
+Shell Link: C:\Documents and Settings\Administrator\Start Menu\Programs\Agilent Signal Generators\PSG-ESG Download Assistant.lnk
+User Rights: Admin
