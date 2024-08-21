@@ -1,7 +1,4 @@
 addpath('C:\Users\vlsi2\Documents\MATLAB\iqtools')
-% addpath('C:\Users\vlsi2\DPD\instrument_functions')
-addpath(genpath('C:\Users\vlsi2\DPD\NN_DPD old'))
-addpath(genpath('C:\Users\vlsi2\DPD\DPD_Nimrod'))
 %% open communication with the MXG
 ESG_addr = {'132.66.48.3','5025'};
 ESG = initiate_ESG_with_ipaddr(ESG_addr);
@@ -76,6 +73,7 @@ end
 load('captured_aligned_signals.mat');
 Input_signal = inAlign;
 Output_signal = outAlign;
+
 %% Recorded signal
 linear_gain_1=1;
 Input_signal = inAlign;
@@ -126,11 +124,13 @@ disp(['Ranking of the PA model: ', num2str(rank)]);
 %% figures for the PA model frequency domain
 
 figure;
-plot(f,smooth(db(fftshift(fft(Input_signal))),100)); hold on;
-%%
-plot(f,smooth(db(fftshift(fft(Output_signal))),100)); hold on;
-plot(f,smooth(db(fftshift(fft(Output_no_DPD_estimated))),100)); hold on;
+plot(smooth(db(fftshift(fft(Input_signal))),100)); 
+hold on;
+
+plot(smooth(db(fftshift(fft(Output_signal))),100));
+plot(smooth(db(fftshift(fft(Output_no_DPD_estimated))),100));
 grid;
+legend('Input Signal', 'Output Signal', 'Output without DPD Estimated');
 
 % NMSE_model = db(rms(Output_signal/rms(Output_signal)-Output_no_DPD_estimated/rms(Output_no_DPD_estimated)))
 
@@ -209,13 +209,13 @@ end
 % model ranking
 rank = normalizedSquaredDifferenceLoss(Output_with_DPD_estimated,Output_signal ./ linear_gain_1);
 disp(['Ranking of the PA model: ', num2str(rank)]);
-% figures for the PA model frequency domain
-figure
-plot(f,smooth(db(fftshift(fft(Input_signal))),100))
-hold on
-plot(f,smooth(db(fftshift(fft(Output_signal))),100))
-plot(f,smooth(db(fftshift(fft(Output_with_DPD_estimated))),100))
-grid
+%% figures for the PA model frequency domain
+figure;
+plot(f,smooth(db(fftshift(fft(Input_signal))),100));
+hold on;
+plot(f,smooth(db(fftshift(fft(Output_signal))),100));
+plot(f,smooth(db(fftshift(fft(Output_with_DPD_estimated))),100));
+grid;
 
 NMSE_model = db(rms(Output_signal/rms(Output_signal)-Output_with_DPD_estimated/rms(Output_with_DPD_estimated)))
 
